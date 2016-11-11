@@ -1,0 +1,112 @@
+<html>
+	<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>	
+
+	<script>
+		var cvs;
+		var ctx;
+		var snake;
+		var food;
+		var lastKeyPressed = 0;
+		var fps = 10;
+		var cells = 20;
+		var i = 0;
+		var j = 0;
+		var score = 0;
+
+		$(document).ready(function(){
+			cvs = $("canvas").get(0);
+			ctx = cvs.getContext("2d");
+
+			$("body").keydown(function(event){
+				lastKeyPressed = event.which;
+			});
+			
+			snake = {
+				x: i,
+				y: j,
+				width: cvs.width/cells,
+				height: cvs.height/cells
+			}
+
+			food = {
+				x: getRandomX(),
+				y: getRandomY(),
+				width: cvs.width/cells,
+				height: cvs.height/cells
+			}
+
+			requestAnimationFrame(draw);
+		});
+
+		function getRandomX(){
+			return (Math.floor((Math.random()*cvs.width)/(cvs.width/cells)))*(cvs.width/cells);
+		}
+
+		function getRandomY(){
+			return (Math.floor((Math.random()*cvs.height)/(cvs.width/cells)))*(cvs.width/cells);
+		}
+
+		//generate new food
+		function drawFood(){
+			ctx.fillRect(food.x, food.y, food.width, food.height);
+		}
+		
+		function draw(){
+			setTimeout(function(){
+
+				ctx.clearRect(0, 0, cvs.width, cvs.height); //clear canvas
+
+				ctx.fillRect(snake.x*cvs.width/cells, snake.y*cvs.height/cells, snake.width, snake.height);
+
+				//score
+				ctx.font = "15px Verdana";
+				ctx.fillText("Score: " + score, 400, 20);
+				
+				//keyboard controls	 
+				if(lastKeyPressed == 40){ 
+					snake.y++;
+				}
+				else if(lastKeyPressed == 38){
+					snake.y--;
+				}
+				else if(lastKeyPressed == 37){
+					snake.x--;
+				}
+				else if(lastKeyPressed == 39){
+					snake.x++;
+				}
+				
+				//collision detection w/sides - reset game
+				if(snake.y<0 || snake.y>cells-1 || snake.x<0 || snake.x>cells-1){
+					location.reload();
+				}
+
+				//new food
+				drawFood();
+
+				//sanke eats food
+				if((snake.x*cvs.width/cells === food.x) && (snake.y*cvs.width/cells === food.y)){
+					food.x = getRandomX();
+					food.y = getRandomY();
+					score += 10;
+				}
+				
+				requestAnimationFrame(draw);
+				
+			}, 1000/fps);
+		}
+
+	</script>
+	
+	</head>
+	
+	
+	<body>
+
+	<canvas width="500" height="500" style="border: solid black 1px">
+		Sorry, no canvas support!
+	</canvas>
+	
+	</body>
+</html>
